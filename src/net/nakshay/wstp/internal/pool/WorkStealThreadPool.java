@@ -1,7 +1,8 @@
 package net.nakshay.wstp.internal.pool;
+
 import java.util.concurrent.ThreadFactory;
 
- class WorkStealThreadPool {
+class WorkStealThreadPool {
 
   final int DEFAULT_POOL_SIZE;
   final ThreadFactory THREAD_FACTORY;
@@ -17,5 +18,19 @@ import java.util.concurrent.ThreadFactory;
 
   WorkStealThreadPool() {
     this(10);
+  }
+
+  public class Worker implements Runnable {
+
+    private Runnable task = null;
+    private Thread thread = null;
+
+    Worker(Runnable task) {
+      this.task = task;
+      this.thread = THREAD_FACTORY.newThread(this);
+    }
+
+    @Override
+    public void run() {}
   }
 }

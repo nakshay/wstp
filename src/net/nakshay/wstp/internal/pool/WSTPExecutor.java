@@ -16,10 +16,9 @@ class WSTPExecutor implements WSTPService {
   }
 
   WSTPExecutor(final int poolSize, final ThreadFactory factory) {
-    threadPool = new WorkStealThreadPool(poolSize,factory);
+    threadPool = new WorkStealThreadPool(poolSize, factory);
   }
 
-   @Override
-   public void runCallable(Runnable runnable) {
-   }
- }
+  @Override
+  public void runCallable(Runnable runnable) {}
+}
