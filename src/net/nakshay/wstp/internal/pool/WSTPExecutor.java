@@ -2,11 +2,9 @@ package net.nakshay.wstp.internal.pool;
 
 import net.nakshay.wstp.internal.service.WSTPService;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
- class WSTPExecutor implements WSTPService {
+class WSTPExecutor implements WSTPService {
   private final WorkStealThreadPool threadPool;
 
   WSTPExecutor() {
@@ -22,7 +20,6 @@ import java.util.concurrent.ThreadFactory;
   }
 
    @Override
-   public <T> Future<T> runCallable(Callable<T> callable) {
-     return null;
+   public void runCallable(Runnable runnable) {
    }
  }
