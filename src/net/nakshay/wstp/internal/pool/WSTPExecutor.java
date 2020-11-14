@@ -20,5 +20,5 @@ class WSTPExecutor implements WSTPService {
   }
 
   @Override
-  public void runCallable(Runnable runnable) {}
+  public void runJob(Runnable runnable) {}
 }
