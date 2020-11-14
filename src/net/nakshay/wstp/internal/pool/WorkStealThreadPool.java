@@ -1,19 +1,24 @@
 package net.nakshay.wstp.internal.pool;
 
-import java.util.concurrent.ThreadFactory;
-
 class WorkStealThreadPool {
 
-  final int DEFAULT_POOL_SIZE;
-  final ThreadFactory THREAD_FACTORY;
+  private static int DEFAULT_POOL_SIZE;
+  private static int MAX_PARALLELISM;
 
-  WorkStealThreadPool(final int poolSize, final ThreadFactory factory) {
-    this.DEFAULT_POOL_SIZE = poolSize;
-    this.THREAD_FACTORY = factory;
+  static {
+    MAX_PARALLELISM = Runtime.getRuntime().availableProcessors();
+    DEFAULT_POOL_SIZE = MAX_PARALLELISM;
   }
 
   WorkStealThreadPool(final int poolSize) {
-    this(poolSize, (runnable) -> new Thread(runnable, "WSTP Thread"));
+    validatePoolSize(poolSize);
+    DEFAULT_POOL_SIZE = poolSize;
+  }
+
+  private void validatePoolSize(final int poolSize) {
+    if (poolSize > MAX_PARALLELISM) {
+      throw new IllegalArgumentException();
+    }
   }
 
   WorkStealThreadPool() {
@@ -27,7 +32,6 @@ class WorkStealThreadPool {
 
     Worker(Runnable task) {
       this.task = task;
-      this.thread = THREAD_FACTORY.newThread(this);
     }
 
     @Override

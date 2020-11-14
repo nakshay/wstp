@@ -2,9 +2,8 @@ package net.nakshay.wstp.internal.pool;
 
 import net.nakshay.wstp.internal.service.WSTPService;
 
-import java.util.concurrent.ThreadFactory;
-
 class WSTPExecutor implements WSTPService {
+
   private final WorkStealThreadPool threadPool;
 
   WSTPExecutor() {
@@ -15,10 +14,8 @@ class WSTPExecutor implements WSTPService {
     threadPool = new WorkStealThreadPool(poolSize);
   }
 
-  WSTPExecutor(final int poolSize, final ThreadFactory factory) {
-    threadPool = new WorkStealThreadPool(poolSize, factory);
-  }
-
   @Override
-  public void runJob(Runnable runnable) {}
+  public void runJob(Runnable runnable) {
+    
+  }
 }
