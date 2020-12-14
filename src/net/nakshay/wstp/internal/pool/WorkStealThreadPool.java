@@ -10,7 +10,19 @@ class WorkStealThreadPool {
   WorkStealThreadPool(final int poolSize) {
     validatePoolSize(poolSize);
     workers = new Worker[poolSize];
+
+    // Adding worker eagerly for now
+    // later on workers will be added as an when required
+    addWorker();
   }
+
+  private void addWorker() {
+    for (Worker worker : workers) {
+        worker = new Worker();
+        worker.thread.start();
+    }
+  }
+
 
   WorkStealThreadPool() {
     this(Runtime.getRuntime().availableProcessors());
@@ -30,10 +42,21 @@ class WorkStealThreadPool {
 
   public static class Worker implements Runnable {
     // Default size for each queue 10 for now, need to think on this.
-    private Deque<Runnable> taskQueue = new ArrayDeque<>(10);
+    private final Deque<Runnable> taskQueue = new ArrayDeque<>(10);
+    private Thread thread;
 
+    Worker(){
+      configureRunnable();
+    }
+
+    public Deque<Runnable> getTaskQueue() {
+      return taskQueue;
+    }
     protected int queueSize() {
       return taskQueue.size();
+    }
+    protected void configureRunnable(){
+      this.thread = new Thread(this);
     }
 
     protected void addTask(Runnable task) {
@@ -46,11 +69,25 @@ class WorkStealThreadPool {
 
     @Override
     public void run() {
-      // need to decide on logic for polling tasks from queue
+      // need to decide on logic for polling tasks from queue, and stealing task
       while (true) {
-        Runnable runnable = taskQueue.pollFirst();
-        new Thread(runnable).start();
+        try{
+          Runnable runnable = taskQueue.pollFirst();
+          new Thread(runnable).start();
+        }catch (Exception ex) {
+          // Need configuration to pass logs to caller
+          ex.printStackTrace();
+        }
+
       }
+    }
+
+    public Thread getThread() {
+      return thread;
+    }
+
+    public void setThread(Thread thread) {
+      this.thread = thread;
     }
   }
 }
