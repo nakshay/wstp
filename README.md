@@ -12,7 +12,10 @@ once all tasks from the queue gets finished it can look for another thread's que
 ### RoadMap
 
 - [x] Initial skeleton
-- [x] Accept pool size and ThreadFactory from the client.
-- [ ] Create worker threads for pool.
-- [ ] Accept Callable from the client (Tasks) and maintain pool of Tasks.
-- [ ] Create worker threads for pool and consume tasks.
+- [x] Accept pool size from the client.
+- [x] Accept Runnable from the client (Tasks) 
+- [x] Create worker threads for pool and consume tasks.
+- [ ] Collect task in common pool and distribute tasks to workers
+- [ ] Run taks from individual pool and steal task on idle.
+
+
