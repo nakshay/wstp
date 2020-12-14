@@ -1,7 +1,9 @@
 package net.nakshay.wstp.internal.pool;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 class WorkStealThreadPool {
 
@@ -42,14 +44,14 @@ class WorkStealThreadPool {
 
   public static class Worker implements Runnable {
     // Default size for each queue 10 for now, need to think on this.
-    private final Deque<Runnable> taskQueue = new ArrayDeque<>(10);
+    private final BlockingDeque<Runnable> taskQueue = new LinkedBlockingDeque<>(10);
     private Thread thread;
 
     Worker(){
       configureRunnable();
     }
 
-    public Deque<Runnable> getTaskQueue() {
+    public BlockingQueue<Runnable> getTaskQueue() {
       return taskQueue;
     }
     protected int queueSize() {
@@ -59,11 +61,11 @@ class WorkStealThreadPool {
       this.thread = new Thread(this);
     }
 
-    protected void addTask(Runnable task) {
-      taskQueue.offerLast(task);
+    protected void addTask(Runnable task) throws InterruptedException {
+      taskQueue.putLast(task);
     }
 
-    protected Runnable stealTask() {
+    protected Runnable stealTask() throws InterruptedException {
       return taskQueue.pollLast();
     }
 
@@ -72,7 +74,7 @@ class WorkStealThreadPool {
       // need to decide on logic for polling tasks from queue, and stealing task
       while (true) {
         try{
-          Runnable runnable = taskQueue.pollFirst();
+          Runnable runnable = taskQueue.takeFirst();
           new Thread(runnable).start();
         }catch (Exception ex) {
           // Need configuration to pass logs to caller

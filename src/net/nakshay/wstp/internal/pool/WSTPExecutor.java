@@ -15,7 +15,7 @@ class WSTPExecutor implements WSTPService {
   }
 
   @Override
-  public void runJob(Runnable runnable) {
+  public void runJob(Runnable runnable) throws InterruptedException {
 
     // Create worker, and each worker will have its own queue
     // add task to the queue as per the load in the queue
@@ -24,6 +24,7 @@ class WSTPExecutor implements WSTPService {
     WorkStealThreadPool.Worker[] workers = threadPool.getWorkers();
     boolean submitted = false;
     for (WorkStealThreadPool.Worker worker : workers) {
+      // Need to maintian common pool of task to distribute tasks among workers
       if (worker.queueSize() < 1) {
         worker.addTask(runnable);
         submitted = true;
