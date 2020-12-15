@@ -13,8 +13,6 @@ class WSTPExecutor implements WSTPService {
   private final Object monitor = new Object();
   private final Thread monitorThread = new Thread(new Distributor(monitor));
 
-
-
   WSTPExecutor() {
     threadPool = new WorkStealThreadPool();
   }
@@ -26,38 +24,38 @@ class WSTPExecutor implements WSTPService {
   @Override
   public void runJob(Runnable runnable) {
 
-    if(runnable==null) {
+    if (runnable == null) {
       throw new IllegalArgumentException("Empty Runnable, check for null");
     }
-    
+
     taskQueue.offerLast(runnable);
-    if(!isActive) {
+    if (!isActive) {
       isActive = true;
       monitorTaskQueue();
     }
 
-    synchronized (monitor){
+    synchronized (monitor) {
       // notify distributor to check for queue
-      notify();
+      monitor.notify();
     }
-//
-//    WorkStealThreadPool.Worker[] workers = threadPool.getWorkers();
-//    boolean submitted = false;
-//    for (WorkStealThreadPool.Worker worker : workers) {
-//      // Need to maintain common pool of task to distribute tasks among workers
-//      if (worker.queueSize() < 1) {
-//        worker.addTask(runnable);
-//        submitted = true;
-//      }
-//    }
-//
-//    if (!submitted) {
-//      // need to figure out what to be done for tasks which could not be submitted
-//    }
+    //
+    //    WorkStealThreadPool.Worker[] workers = threadPool.getWorkers();
+    //    boolean submitted = false;
+    //    for (WorkStealThreadPool.Worker worker : workers) {
+    //      // Need to maintain common pool of task to distribute tasks among workers
+    //      if (worker.queueSize() < 1) {
+    //        worker.addTask(runnable);
+    //        submitted = true;
+    //      }
+    //    }
+    //
+    //    if (!submitted) {
+    //      // need to figure out what to be done for tasks which could not be submitted
+    //    }
   }
 
   private void monitorTaskQueue() {
-
+    monitorThread.start();
   }
 
   @Override
@@ -70,27 +68,45 @@ class WSTPExecutor implements WSTPService {
     private final Object monitor;
 
     Distributor(Object monitor) {
-      this.monitor= monitor;
+      this.monitor = monitor;
     }
 
     @Override
     public void run() {
-        while (true) {
-          synchronized (monitor) {
-            try {
-            for (Runnable runnable : taskQueue) {
+      while (true) {
+        synchronized (monitor) {
+          try {
+            int length = taskQueue.size();
+
+            for (int i = 0; i < length; i++) {
               // Add logic to submit task to specific queue
-              System.out.println(runnable);
+              WorkStealThreadPool.Worker[] workers = threadPool.getWorkers();
+
+              while (taskQueue.size() > 1) {
+                submitTask(workers);
+                Thread.sleep(500);
+              }
             }
-            // wait until next task comes in
-              Thread.currentThread().wait();
-            } catch (InterruptedException e) {
-              e.printStackTrace();
-            }
+
+            monitor.wait();
+          } catch (InterruptedException e) {
+            e.printStackTrace();
           }
         }
+      }
+    }
+
+    private void submitTask(WorkStealThreadPool.Worker[] workers) throws InterruptedException {
+      for (WorkStealThreadPool.Worker worker : workers) {
+        if (worker.getTaskQueue().size() < 10) {
+          Runnable task = taskQueue.pollFirst();
+          if (task != null) {
+            worker.addTask(taskQueue.pollFirst());
+          }else{
+            return;
+          }
+        }
+      }
     }
   }
 }
-
-

@@ -1,5 +1,7 @@
 package net.nakshay.wstp.internal.pool;
 
+import com.sun.corba.se.spi.orbutil.threadpool.Work;
+
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -16,12 +18,13 @@ class WorkStealThreadPool {
     // Adding worker eagerly for now
     // later on workers will be added as an when required
     addWorker();
+
   }
 
   private void addWorker() {
-    for (Worker worker : workers) {
-        worker = new Worker();
-        worker.thread.start();
+    for (int i =0 ; i <workers.length;i++) {
+      workers[i] = new Worker();
+      workers[i].thread.start();
     }
   }
 
@@ -48,6 +51,7 @@ class WorkStealThreadPool {
     private Thread thread;
 
     Worker(){
+
       configureRunnable();
     }
 
