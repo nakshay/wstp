@@ -7,6 +7,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 class WorkStealThreadPool {
 
   private final Worker[] workers;
+  private final boolean shutDown = false;
 
   WorkStealThreadPool(final int poolSize) {
     validatePoolSize(poolSize);

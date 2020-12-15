@@ -17,5 +17,6 @@ once all tasks from the queue gets finished it can look for another thread's que
 - [x] Create worker threads for pool and consume tasks.
 - [ ] Collect task in common pool and distribute tasks to workers
 - [ ] Run taks from individual pool and steal task on idle.
+- [ ] Safely shutdown
 
 
