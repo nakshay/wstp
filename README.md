@@ -9,6 +9,18 @@ once all tasks from the queue gets finished it can look for another thread's que
 
 ***I am not aiming this to be a full featured service and is for learning purpose only***
 
+### Example :
+
+```
+WSTPService service = WSTPFactory.newThreadPool(5);
+    // OR create a default thread pool 
+WSTPService service = WSTPFactory.defaultThreadPool();
+
+service.runJob(<Runnable>);
+  
+  ```
+ 
+
 ### RoadMap
 
 - [x] Initial skeleton
@@ -18,6 +30,8 @@ once all tasks from the queue gets finished it can look for another thread's que
 - [x] Collect task in common pool and distribute tasks to workers
 - [x] Run tasks from individual pool and steal task on idle.
 - [x] Steal tasks from others
+- [ ] Make Stealing task, and waiting more efficient
+- [ ] Add test cases for pool configuration and validations
 - [ ] Safely shutdown
 
 
