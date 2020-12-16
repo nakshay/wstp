@@ -8,12 +8,19 @@ import java.util.Arrays;
 public class Main {
 
   public static void main(String[] args) throws InterruptedException {
-    WSTPService service = WSTPFactory.defaultThreadPool();
-    service.runJob(() -> System.out.println("From runnable 1"));
+    WSTPService service = WSTPFactory.newThreadPool(5);
+    service.runJob(() ->
+    {   System.out.println("From runnable 1");
+        System.out.println("Processed by "+Thread.currentThread().getId());
+    });
 
-    service.runJob(() -> System.out.println("From runnable 2"));
+      service.runJob(() -> {
+          System.out.println("From runnable 2");
+          System.out.println("Processed by "+Thread.currentThread().getId());});
 
-    service.runJob(() -> System.out.println("From runnable 3"));
+      service.runJob(() -> {
+          System.out.println("From runnable 3");
+          System.out.println("Processed by "+Thread.currentThread().getId());});
 
     service.runJobs(
         Arrays.asList(
@@ -21,18 +28,22 @@ public class Main {
               @Override
               public void run() {
                 System.out.println(" From clousre 1");
+                System.out.println("Processed by "+Thread.currentThread().getId());
               }
             },
             new Runnable() {
               @Override
               public void run() {
                 System.out.println(" From clousre 2");
+                  System.out.println("Processed by "+Thread.currentThread().getId());
               }
+
             },
             new Runnable() {
               @Override
               public void run() {
                 System.out.println(" From clousre 3");
+                  System.out.println("Processed by "+Thread.currentThread().getId());
               }
             }));
   }
