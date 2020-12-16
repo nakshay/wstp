@@ -16,7 +16,8 @@ once all tasks from the queue gets finished it can look for another thread's que
 - [x] Accept Runnable from the client (Tasks) 
 - [x] Create worker threads for pool and consume tasks.
 - [x] Collect task in common pool and distribute tasks to workers
-- [x] Run taks from individual pool and steal task on idle.
+- [x] Run tasks from individual pool and steal task on idle.
+- [x] Steal tasks from others
 - [ ] Safely shutdown
 
 

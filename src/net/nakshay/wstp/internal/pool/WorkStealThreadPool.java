@@ -1,6 +1,8 @@
 package net.nakshay.wstp.internal.pool;
 
 
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -45,7 +47,7 @@ class WorkStealThreadPool {
     return workers;
   }
 
-  public static class Worker implements Runnable {
+  protected class Worker implements Runnable {
     // Default size for each queue 10 for now, need to think on this.
     private final BlockingDeque<Runnable> taskQueue = new LinkedBlockingDeque<>(10);
     private Thread thread;
@@ -78,14 +80,40 @@ class WorkStealThreadPool {
       // need to decide on logic for polling tasks from queue, and stealing task
       while (true) {
         try{
-          Runnable runnable = taskQueue.takeFirst();
-          new Thread(runnable).run();
+          Runnable runnable;
+          if(!taskQueue.isEmpty()){
+             runnable = taskQueue.takeFirst();
+          }else{
+            Thread.sleep(500);
+            // Wait for some time, need to make it efficient
+            // steal task from brothers if present
+           runnable =  stealFromWorker();
+          }
+          // calling run instead of start, because workers are already
+          // running on threads
+          if(runnable != null ){
+            new Thread(runnable).run();
+          }
+
         }catch (Exception ex) {
           // Need configuration to pass logs to caller
           ex.printStackTrace();
         }
 
       }
+    }
+
+    private Runnable stealFromWorker() throws InterruptedException {
+      System.out.println("Stealing task from overloaded worker");
+      Optional<Worker> overloadeWorker = Arrays.stream(getWorkers())
+              .filter(x -> x.getTaskQueue().size()>1)
+              .findFirst();
+      if(overloadeWorker.isPresent()){
+        // Blocking queue should handle the concurrency
+        System.out.println("stolen the task");
+        return overloadeWorker.get().stealTask();
+      }
+      return null;
     }
 
     public Thread getThread() {
