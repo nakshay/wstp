@@ -38,20 +38,6 @@ class WSTPExecutor implements WSTPService {
       // notify distributor to check for queue
       monitor.notify();
     }
-    //
-    //    WorkStealThreadPool.Worker[] workers = threadPool.getWorkers();
-    //    boolean submitted = false;
-    //    for (WorkStealThreadPool.Worker worker : workers) {
-    //      // Need to maintain common pool of task to distribute tasks among workers
-    //      if (worker.queueSize() < 1) {
-    //        worker.addTask(runnable);
-    //        submitted = true;
-    //      }
-    //    }
-    //
-    //    if (!submitted) {
-    //      // need to figure out what to be done for tasks which could not be submitted
-    //    }
   }
 
   private void monitorTaskQueue() {
@@ -101,7 +87,7 @@ class WSTPExecutor implements WSTPService {
         if (worker.getTaskQueue().size() < 10) {
           Runnable task = taskQueue.pollFirst();
           if (task != null) {
-            worker.addTask(taskQueue.pollFirst());
+            worker.addTask(task);
           }else{
             return;
           }

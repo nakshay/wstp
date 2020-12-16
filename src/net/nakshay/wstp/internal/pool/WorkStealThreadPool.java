@@ -1,6 +1,5 @@
 package net.nakshay.wstp.internal.pool;
 
-import com.sun.corba.se.spi.orbutil.threadpool.Work;
 
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
@@ -11,8 +10,8 @@ class WorkStealThreadPool {
   private final Worker[] workers;
   private final boolean shutDown = false;
 
-  WorkStealThreadPool(final int poolSize) {
-    validatePoolSize(poolSize);
+  WorkStealThreadPool(int poolSize) {
+    poolSize = validatePoolSize(poolSize);
     workers = new Worker[poolSize];
 
     // Adding worker eagerly for now
@@ -33,12 +32,13 @@ class WorkStealThreadPool {
     this(Runtime.getRuntime().availableProcessors());
   }
 
-  private void validatePoolSize(final int poolSize) {
+  private int validatePoolSize(int poolSize) {
     int MAX_PARALLELISM = Runtime.getRuntime().availableProcessors();
 
     if (poolSize > MAX_PARALLELISM) {
-      throw new IllegalArgumentException();
+      poolSize = MAX_PARALLELISM;
     }
+    return poolSize;
   }
 
   protected Worker[] getWorkers() {
@@ -79,7 +79,7 @@ class WorkStealThreadPool {
       while (true) {
         try{
           Runnable runnable = taskQueue.takeFirst();
-          new Thread(runnable).start();
+          new Thread(runnable).run();
         }catch (Exception ex) {
           // Need configuration to pass logs to caller
           ex.printStackTrace();
