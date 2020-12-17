@@ -62,9 +62,9 @@ class WSTPExecutor implements WSTPService {
       while (true) {
         synchronized (monitor) {
           try {
-            int length = taskQueue.size();
+            int size = taskQueue.size();
 
-            for (int i = 0; i < length; i++) {
+            for (int i = 0; i < size; i++) {
               // Add logic to submit task to specific queue
               WorkStealThreadPool.Worker[] workers = threadPool.getWorkers();
 
