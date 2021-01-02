@@ -8,7 +8,7 @@ import java.util.LinkedList;
 class WSTPExecutor implements WSTPService {
 
   private final WorkStealThreadPool threadPool;
-  private final LinkedList<Runnable> taskQueue = new LinkedList<Runnable>();
+  private final LinkedList<Runnable> taskQueue = new LinkedList<>();
   private boolean isActive = false;
   private final Object monitor = new Object();
   private final Thread monitorThread = new Thread(new Distributor(monitor));
